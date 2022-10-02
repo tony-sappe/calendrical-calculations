@@ -32,17 +32,38 @@ class Date:
     _year: int
     _month: int
     _day: int
-    _fixed: int
 
     def __init__(self, year: int, month: int, day: int):
         raise NotImplementedError()
 
     def __getitem__(self, key: int) -> int:
-        if abs(key) > 2:
-            raise IndexError("Date only has three items: year, month, day")
-        return [self.year, self.month, self.day][key]
+        if key not in range(-3, 3):
+            raise IndexError("Date only has three items: year, month, & day")
+        return (self.year, self.month, self.day)[key]
+
+    def __lt__(self, other) -> bool:
+        return self.fixed < other.fixed
+
+    def __le__(self, other) -> bool:
+        return self.fixed <= other.fixed
+
+    def __eq__(self, other) -> bool:
+        return self.fixed == self.fixed
+
+    def __ne__(self, other) -> bool:
+        return self.fixed != other.fixed
+
+    def __gt__(self, other) -> bool:
+        return self.fixed > other.fixed
+
+    def __ge__(self, other) -> bool:
+        return self.fixed >= other.fixed
 
     def is_leapyear() -> bool:
+        raise NotImplementedError()
+
+    @property
+    def fixed(self):
         raise NotImplementedError()
 
 
@@ -65,24 +86,22 @@ class Gregorian(Date):
     day_names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
     def __init__(self, y: int, m: int, d: int):
+        # print(f"Gregorian({y}-{m}-{d})")
         self.month_lengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
         self._year = int(y)
         self._month = int(m) - 1
         self._day = int(d)
 
         if self.is_leapyear:
-            self.month_lengths[1] = 29
+            self.month_lengths[FEBRUARY] = 29
 
-        # print(f"Gregorian({y}-{m}-{d})")
         self._verify()
-
-        # self._fixed = fixed_from_gregorian(self)
 
     def __repr__(self):
         return f"Gregorian({self.year:04}, {self.month:02}, {self.day:02})"
 
     def _verify(self):
-        """"""
+        """Verify the legitimacy of the provided YYYY-MM-DD"""
 
         if self._year == 0:
             raise DateFormatException("No year 0 for Gregorian Calendar")
@@ -109,9 +128,9 @@ class Gregorian(Date):
 
     @property
     def year_name(self) -> str:
-        postfix = "B.C."
-        if self._year > 0:
-            postfix = "A.D."
+        postfix = "A.D."
+        if self._year < 0:
+            postfix = "B.C."
 
         return f"{self._year} {postfix}"
 
@@ -163,37 +182,25 @@ class Gregorian(Date):
 
     @property
     def fixed(self):
+        prior_y = self.year - 1
 
         if self.month <= 2:
-            factor = 0
+            february_correction = 0
         elif self.is_leapyear:
-            factor = -1
+            february_correction = -1
         else:
-            factor = -2
+            february_correction = -2
+
+        sum_of_days_in_previous_months = floor((367 * self.month - 362) / 12) + february_correction
+        total_leap_days = floor((prior_y) / 4) - floor((prior_y) / 100) + floor((prior_y) / 400)
+        sum_of_days_in_previous_years = 365 * (self.year - 1) + total_leap_days
 
         return (
-            self.epoch
-            - 1
-            + 365 * (self.year - 1)
-            + floor((self.year - 1) / 4)
-            - floor((self.year - 1) / 100)
-            + floor((self.year - 1) / 400)
-            + floor((1 / 12) * (367 * self.month - 362))
-            + factor
-            + self.day
+            (self.epoch - 1)
+            + sum_of_days_in_previous_years
+            + sum_of_days_in_previous_months
+            + self.day  # day of current month
         )
-
-
-# def standard_year(date):
-#     return date[0]
-
-
-# def standard_month(date):
-#     return date[1]
-
-
-# def standard_day(date):
-#     return date[2]
 
 
 def gregorian_epoch() -> int:
@@ -206,28 +213,3 @@ def gregorian_leap_year(year: int) -> bool:
 
 def day_of_week_from_fixed(fixed_date: int) -> int:
     return (fixed_date - rd(0) - SUNDAY) % 7
-
-
-def fixed_from_gregorian(gdate: Gregorian) -> int:
-    year = gdate.year
-    month = gdate.month
-    day = gdate.day
-
-    if month <= 2:
-        factor = 0
-    elif gdate.is_leapyear:
-        factor = -1
-    else:
-        factor = -2
-
-    return (
-        gdate.epoch
-        - 1
-        + 365 * (year - 1)
-        + floor((year - 1) / 4)
-        - floor((year - 1) / 100)
-        + floor((year - 1) / 400)
-        + floor((1 / 12) * (367 * month - 362))
-        + factor
-        + day
-    )
