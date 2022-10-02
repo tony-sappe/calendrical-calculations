@@ -23,9 +23,8 @@ If you need to solve similar types of problems I highly encourage you to purchas
 ## Calendrical Calculations "The Ultimate Edition" - 4th Edition
 ![book cover](https://assets.cambridge.org/97811070/57623/cover/9781107057623.jpg)
 
-Authors:
-- Edward M. Reingold, Illinois Institute of Technology
-- Nachum Dershowitz, Tel-Aviv University
-
-ISBN: `9781107057623`
-http://cambridge.org/calendricalcalculations
+- Authors:
+    - Edward M. Reingold, Illinois Institute of Technology
+    - Nachum Dershowitz, Tel-Aviv University
+- ISBN: `9781107057623`
+- Publisher [site](http://cambridge.org/calendricalcalculations)
