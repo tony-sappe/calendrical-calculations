@@ -1,4 +1,4 @@
-from ..calculations import *
+from ..calculations.gregorian import *
 
 # === Leap Years ===
 assert gregorian_leap_year(1900) is False, "❌"
