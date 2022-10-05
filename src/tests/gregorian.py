@@ -13,17 +13,6 @@ assert gregorian_leap_year(2000) is True, "❌"
 assert gregorian_leap_year(2004) is True, "❌"
 
 
-# === Month Values and Names alignment ===
-
-assert Gregorian().month_names[JANUARY] == "January", "❌"
-assert Gregorian().month_names[NOVEMBER] == "November", "❌"
-assert len(Gregorian().month_names) == 12, "❌"
-
-assert Gregorian().day_names[MONDAY] == "Monday", "❌"
-assert Gregorian().day_names[SATURDAY] == "Saturday", "❌"
-assert len(Gregorian().day_names) == 7, "❌"
-
-
 # === Check Valid Leap Years ===
 
 leapyear_dates = [(2000, 4, 1), (536, 3, 30), (2504, 9, 12), (4, 4, 4), (-400, 1, 1)]

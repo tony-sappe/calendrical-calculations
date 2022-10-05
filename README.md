@@ -28,3 +28,18 @@ If you need to solve similar types of problems I highly encourage you to purchas
     - Nachum Dershowitz, Tel-Aviv University
 - ISBN: `9781107057623`
 - Publisher [site](http://cambridge.org/calendricalcalculations)
+
+
+## Development
+One goal is to keep the algorithms "pure" and not based on existing libraries.
+It is very possible that much of the code is a poor duplication of existing available source code.
+It is also possible the code is inefficient since I will not be spending significant amounts of time to optimize.
+However, completing this provides a learning opportunity and confidence the algorithms and calculations are true to the source material.
+
+### Dependencies
+- pyenv
+- watchmen
+- Python 3.10
+    - pyre
+    - black
+
