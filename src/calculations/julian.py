@@ -25,29 +25,28 @@ class Julian(Date):
     day_names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
     def __init__(self):
-        self.month_lengths = copy(GREGORIAN_MONTH_LENGTHS)
+        self.month_lengths = copy(JULIAN_MONTH_LENGTHS)
         self._year = None
         self._month = None
         self._day = None
-        self._rata_die = None
+        self.rata_die = None
 
     def from_date(self, y: int, m: int, d: int):
         """Poor-man's Constructor when providing YYYY-MM-DD"""
         self._year = int(y)
         self._month = int(m) - 1
         self._day = int(d)
-        self._rata_die = self.fixed
+        self.rata_die = self._fixed_from_date()
 
         if self.is_leapyear:
-            self.month_lengths[FEBRUARY - 1] = 29
+            self.month_lengths[FEBRUARY - 1] += 1  # 28 -> 29
 
         self._verify()
         return self
 
     def from_fixed(self, fixed_date):
         """Poor-man's Constructor when providing Rata Die Fixed Date"""
-        # self._rata_die = floor(fixed_date)
-        self._rata_die = fixed_date
+        self.rata_die = fixed_date
         self._date_from_fixed()
         return self
 
@@ -133,6 +132,9 @@ class Julian(Date):
 
     @property
     def fixed(self):
+        return self.rata_die
+
+    def _fixed_from_date(self):
         y = self.year
         if self.year < 0:
             y += 1
@@ -160,23 +162,23 @@ class Julian(Date):
     def _date_from_fixed(self):
         """Calculate the Julian YYYY-MM-DD from a fixed-date"""
 
-        approx = floor((4 * (self._rata_die - self.epoch) + 1464) / 1461)
+        approx = floor((4 * (self.rata_die - self.epoch) + 1464) / 1461)
         if approx <= 0:
             self._year = approx - 1
         else:
             self._year = approx
 
-        if self._rata_die < Julian().from_date(self.year, MARCH, 1).fixed:
+        if self.rata_die < Julian().from_date(self.year, MARCH, 1).fixed:
             correction = 0
         elif self.is_leapyear:
             correction = 1
         else:
             correction = 2
 
-        prior_days = self._rata_die - Julian().from_date(self.year, JANUARY, 1).fixed
+        prior_days = self.rata_die - Julian().from_date(self.year, JANUARY, 1).fixed
 
         self._month = floor((12 * (prior_days + correction) + 373) / 367) - 1
-        self._day = floor(self._rata_die - Julian().from_date(self.year, self.month, 1).fixed + 1)
+        self._day = floor(self.rata_die - Julian().from_date(self.year, self.month, 1).fixed + 1)
 
 
 def julian_leap_year(year: int) -> bool:

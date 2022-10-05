@@ -11,7 +11,7 @@ class Date(ABC):
     _year: int
     _month: int
     _day: int
-    _rata_die: int
+    rata_die: int
 
     def __init__(self, year: int, month: int, day: int):
         raise NotImplementedError()
@@ -40,7 +40,7 @@ class Date(ABC):
         return self.fixed >= other.fixed
 
     def __int__(self):
-        return self._rata_die
+        return self.rata_die
 
     def is_leapyear(self) -> bool:
         raise NotImplementedError()

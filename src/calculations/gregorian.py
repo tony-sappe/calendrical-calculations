@@ -25,28 +25,28 @@ class Gregorian(Date):
     day_names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
     def __init__(self):
-        self.month_lengths = copy(GREGORIAN_MONTH_LENGTHS)
+        self.month_lengths = copy(JULIAN_MONTH_LENGTHS)
         self._year = None
         self._month = None
         self._day = None
-        self._rata_die = None
+        self.rata_die = None
 
     def from_date(self, y: int, m: int, d: int):
         """Poor-man's Constructor when providing YYYY-MM-DD"""
         self._year = int(y)
         self._month = int(m) - 1
         self._day = int(d)
-        self._rata_die = self.fixed
+        self.rata_die = self._fixed_from_date()
 
         if self.is_leapyear:
-            self.month_lengths[FEBRUARY - 1] = 29
+            self.month_lengths[FEBRUARY - 1] += 1  # 28 -> 29
 
         self._verify()
         return self
 
     def from_fixed(self, fixed_date):
         """Poor-man's Constructor when providing Rata Die Fixed Date"""
-        self._rata_die = floor(fixed_date)
+        self.rata_die = floor(fixed_date)
         self._date_from_fixed()
         return self
 
@@ -125,6 +125,9 @@ class Gregorian(Date):
 
     @property
     def fixed(self):
+        return self.rata_die
+
+    def _fixed_from_date(self):
         prior_y = self.year - 1
 
         if self.month <= 2:
@@ -150,7 +153,7 @@ class Gregorian(Date):
     def _year_from_fixed(self) -> int:
         """Gregorian Year from a Rata Die fixed-date"""
 
-        d0 = self._rata_die - self.epoch  # Prior Days
+        d0 = self.rata_die - self.epoch  # Prior Days
         n400 = floor(d0 / 146097)  # Completed 400-year cycles
         d1 = d0 % 146097  # Prior days not in n400
         n100 = floor(d1 / 36524)  # 100-year cycles not in n400
@@ -170,9 +173,9 @@ class Gregorian(Date):
         """Calculate the Gregorian YYYY-MM-DD from a fixed-date"""
 
         self._year = self._year_from_fixed()
-        prior_days = self._rata_die - Gregorian().from_date(self._year, JANUARY, 1).fixed
+        prior_days = self.rata_die - Gregorian().from_date(self._year, JANUARY, 1).fixed
 
-        if self._rata_die < Gregorian().from_date(self._year, MARCH, 1).fixed:
+        if self.rata_die < Gregorian().from_date(self._year, MARCH, 1).fixed:
             correction = 0
         elif self.is_leapyear:
             correction = 1
@@ -180,7 +183,7 @@ class Gregorian(Date):
             correction = 2
 
         self._month = floor((12 * (prior_days + correction) + 373) / 367) - 1
-        self._day = self._rata_die - Gregorian().from_date(self._year, self.month, 1).fixed + 1
+        self._day = self.rata_die - Gregorian().from_date(self._year, self.month, 1).fixed + 1
 
 
 def gregorian_leap_year(year: int) -> bool:
