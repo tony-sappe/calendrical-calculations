@@ -1,5 +1,6 @@
 from copy import copy
 from math import floor
+from typing import Union
 
 from .constants import *
 from .third_party import get_ordinal_indicator
@@ -31,7 +32,7 @@ class Julian(Date):
         self._day = None
         self.rata_die = None
 
-    def from_date(self, y: int, m: int, d: int):
+    def from_date(self, y: int, m: int, d: int) -> "Julian":
         """Poor-man's Constructor when providing YYYY-MM-DD"""
         self._year = int(y)
         self._month = int(m) - 1
@@ -44,25 +45,25 @@ class Julian(Date):
         self._verify()
         return self
 
-    def from_fixed(self, fixed_date):
+    def from_fixed(self, fixed_date: Union[int, float]) -> "Julian":
         """Poor-man's Constructor when providing Rata Die Fixed Date"""
         self.rata_die = fixed_date
         self._date_from_fixed()
         return self
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Julian({self.year:04}, {self.month:02}, {self.day:02})"
 
-    def __add__(self, other) -> Date:
+    def __add__(self, other: Union[Date, int, float]) -> Date:
         return Julian().from_fixed(self.fixed + int(other))
 
-    def __sub__(self, other) -> Date:
+    def __sub__(self, other: Union[Date, int, float]) -> Date:
         return Julian().from_fixed(self.fixed - int(other))
 
-    def __rsub__(self, other) -> Date:
+    def __rsub__(self, other: Union[Date, int, float]) -> Date:
         return Julian().from_fixed(int(other) - self.fixed)
 
-    def _verify(self):
+    def _verify(self) -> None:
         """Verify the legitimacy of the provided YYYY-MM-DD"""
 
         if self._year == 0:
@@ -122,7 +123,7 @@ class Julian(Date):
         return self.month_lengths[self._month]
 
     @property
-    def is_leapyear(self) -> int:
+    def is_leapyear(self) -> bool:
         """True if the current year is a leap year"""
         return julian_leap_year(self._year)
 
@@ -131,10 +132,10 @@ class Julian(Date):
         return f"{self.dow_name} {self.month_name} {self.day_name}, {self.year_name}"
 
     @property
-    def fixed(self):
+    def fixed(self) -> Union[int, float]:
         return self.rata_die
 
-    def _fixed_from_date(self):
+    def _fixed_from_date(self) -> Union[int, float]:
         y = self.year
         if self.year < 0:
             y += 1
@@ -159,7 +160,7 @@ class Julian(Date):
             + self.day  # day of current month
         )
 
-    def _date_from_fixed(self):
+    def _date_from_fixed(self) -> None:
         """Calculate the Julian YYYY-MM-DD from a fixed-date"""
 
         approx = floor((4 * (self.rata_die - self.epoch) + 1464) / 1461)

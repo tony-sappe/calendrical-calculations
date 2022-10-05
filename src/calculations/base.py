@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Union
 
 from .constants import SUNDAY
 
@@ -21,22 +22,22 @@ class Date(ABC):
             raise IndexError("Date only has three items: year, month, & day")
         return [self.year, self.month, self.day][key]
 
-    def __lt__(self, other) -> bool:
+    def __lt__(self, other: "Date") -> bool:
         return self.fixed < other.fixed
 
-    def __le__(self, other) -> bool:
+    def __le__(self, other: "Date") -> bool:
         return self.fixed <= other.fixed
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: "Date") -> bool:
         return self.fixed == self.fixed
 
-    def __ne__(self, other) -> bool:
+    def __ne__(self, other: "Date") -> bool:
         return self.fixed != other.fixed
 
-    def __gt__(self, other) -> bool:
+    def __gt__(self, other: "Date") -> bool:
         return self.fixed > other.fixed
 
-    def __ge__(self, other) -> bool:
+    def __ge__(self, other: "Date") -> bool:
         return self.fixed >= other.fixed
 
     def __int__(self):
@@ -68,5 +69,5 @@ def rd(tee: int) -> int:
     return tee - epoch
 
 
-def day_of_week_from_fixed(fixed_date: int) -> int:
+def day_of_week_from_fixed(fixed_date: Union[int, float]) -> int:
     return (fixed_date - rd(0) - SUNDAY) % 7

@@ -1,5 +1,6 @@
 from copy import copy
 from math import floor
+from typing import Union
 
 from .constants import *
 from .base import Date, rd, day_of_week_from_fixed, DateFormatException
@@ -31,7 +32,7 @@ class Coptic(Date):
         self._day = None
         self.rata_die = None
 
-    def from_date(self, y: int, m: int, d: int):
+    def from_date(self, y: int, m: int, d: int) -> "Coptic":
         """Poor-man's Constructor when providing YYYY-MM-DD"""
         self._year = int(y)
         self._month = int(m) - 1
@@ -44,25 +45,25 @@ class Coptic(Date):
         self._verify()
         return self
 
-    def from_fixed(self, fixed_date):
+    def from_fixed(self, fixed_date: Union[int, float]) -> "Coptic":
         """Poor-man's Constructor when providing Rata Die Fixed Date"""
         self.rata_die = fixed_date
         self._date_from_fixed()
         return self
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Coptic({self.year:04}, {self.month:02}, {self.day:02})"
 
-    def __add__(self, other) -> Date:
+    def __add__(self, other: Union[Date, int, float]) -> Date:
         return Coptic().from_fixed(self.fixed + int(other))
 
-    def __sub__(self, other) -> Date:
+    def __sub__(self, other: Union[Date, int, float]) -> Date:
         return Coptic().from_fixed(self.fixed - int(other))
 
-    def __rsub__(self, other) -> Date:
+    def __rsub__(self, other: Union[Date, int, float]) -> Date:
         return Coptic().from_fixed(int(other) - self.fixed)
 
-    def _verify(self):
+    def _verify(self) -> None:
         """Verify the legitimacy of the provided YYYY-MM-DD"""
 
         if self._month < 0 or self._month > 12:
@@ -116,7 +117,7 @@ class Coptic(Date):
         return self.month_lengths[self._month]
 
     @property
-    def is_leapyear(self) -> int:
+    def is_leapyear(self) -> bool:
         """True if the current year is a leap year"""
         return coptic_leap_year(self._year)
 
@@ -125,10 +126,10 @@ class Coptic(Date):
         return f"{self.dow_name} {self.month_name} {self.day_name}, {self.year_name}"
 
     @property
-    def fixed(self):
+    def fixed(self) -> Union[int, float]:
         return self.rata_die
 
-    def _fixed_from_date(self):
+    def _fixed_from_date(self) -> Union[int, float]:
         """Relatively simple calculate to obtain fixed-date from YYYY-MM-DD"""
 
         return (
@@ -140,12 +141,12 @@ class Coptic(Date):
             + self.day
         )
 
-    def _date_from_fixed(self):
+    def _date_from_fixed(self) -> None:
         """Calculate the Julian YYYY-MM-DD from a fixed-date"""
 
         self._year = floor((4 * (self.rata_die - self.epoch) + 1463) / 1461)
-        self._month = floor((self.rata_die - Coptic().from_date(self.year, 1, 1)) / 30) + 2
-        self._day = self.rata_die + 1 - Coptic().from_date(self.year, self.month, 1)
+        self._month = floor((self.rata_die - Coptic().from_date(self.year, 1, 1).fixed) / 30) + 2
+        self._day = self.rata_die + 1 - Coptic().from_date(self.year, self.month, 1).fixed
 
 
 def coptic_leap_year(year: int) -> bool:
