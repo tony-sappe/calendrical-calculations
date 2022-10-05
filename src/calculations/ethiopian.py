@@ -6,33 +6,33 @@ from .constants import *
 from .base import Date, rd, day_of_week_from_fixed, DateFormatException
 
 
-class Coptic(Date):
-    epoch: int = rd(Epoch.Coptic)
+class Ethiopic(Date):
+    epoch: int = rd(Epoch.Ethiopic)
     month_names = [
-        "Thoot",
-        "Paope",
-        "Athōr",
-        "Koiak",
-        "Tōbe",
-        "Meshir",
-        "Paremotep",
-        "Parmoute",
-        "Pashons",
-        "Paōne",
-        "Epēp",
-        "Mesorē",
-        "Epagomenē",
+        "Maskaram",
+        "Teqemt",
+        "Hedār",
+        "Tākhśāś",
+        "Ter",
+        "Yakātit",
+        "Magābit",
+        "Miyāzyā",
+        "Genbot",
+        "Sanē",
+        "Hamlē",
+        "Nahasē",
+        "Paguemēn",
     ]
-    day_names = ["Tkyriakē", "Pesnau", "Pshoment", "Peftoou", "Ptiou", "Psoou", "Psabbaton"]
+    day_names = ["Ihud", "Sanyo", "Maksanyo", "Rob", "Hamus", "Arb", "Kidāmmē"]
 
     def __init__(self):
-        self.month_lengths = copy(COPTIC_MONTH_LENGTHS)
+        self.month_lengths = copy(ETHIOPIC_MONTH_LENGTHS)
         self._year = None
         self._month = None
         self._day = None
         self.rata_die = None
 
-    def from_date(self, y: int, m: int, d: int) -> "Coptic":
+    def from_date(self, y: int, m: int, d: int) -> "Ethiopic":
         """Poor-man's Constructor when providing YYYY-MM-DD"""
         self._year = int(y)
         self._month = int(m) - 1
@@ -45,23 +45,23 @@ class Coptic(Date):
         self._verify()
         return self
 
-    def from_fixed(self, fixed_date: Union[int, float]) -> "Coptic":
+    def from_fixed(self, fixed_date: Union[int, float]) -> "Ethiopic":
         """Poor-man's Constructor when providing Rata Die Fixed Date"""
         self.rata_die = fixed_date
         self._date_from_fixed()
         return self
 
     def __repr__(self) -> str:
-        return f"Coptic({self.year:04}, {self.month:02}, {self.day:02})"
+        return f"Ethiopic({self.year:04}, {self.month:02}, {self.day:02})"
 
     def __add__(self, other: Union[Date, int, float]) -> Date:
-        return Coptic().from_fixed(self.fixed + int(other))
+        return Ethiopic().from_fixed(self.fixed + int(other))
 
     def __sub__(self, other: Union[Date, int, float]) -> Date:
-        return Coptic().from_fixed(self.fixed - int(other))
+        return Ethiopic().from_fixed(self.fixed - int(other))
 
     def __rsub__(self, other: Union[Date, int, float]) -> Date:
-        return Coptic().from_fixed(int(other) - self.fixed)
+        return Ethiopic().from_fixed(int(other) - self.fixed)
 
     def _verify(self) -> None:
         """Verify the legitimacy of the provided YYYY-MM-DD"""
@@ -90,7 +90,7 @@ class Coptic(Date):
     def year_name(self) -> str:
         postfix = ""
         if self.year >= 1:
-            postfix = "A.M."
+            postfix = "E.E."
         return f"{self.year} {postfix}"
 
     @property
@@ -119,7 +119,7 @@ class Coptic(Date):
     @property
     def is_leapyear(self) -> bool:
         """True if the current year is a leap year"""
-        return coptic_leap_year(self._year)
+        return ethiopic_leap_year(self._year)
 
     @property
     def pretty_display(self) -> str:
@@ -142,12 +142,12 @@ class Coptic(Date):
         )
 
     def _date_from_fixed(self) -> None:
-        """Calculate the Coptic YYYY-MM-DD from a fixed-date"""
+        """Calculate the Ethiopic YYYY-MM-DD from a fixed-date"""
 
         self._year = floor((4 * (self.rata_die - self.epoch) + 1463) / 1461)
-        self._month = floor((self.rata_die - Coptic().from_date(self.year, 1, 1).fixed) / 30) + 2
-        self._day = self.rata_die + 1 - Coptic().from_date(self.year, self.month, 1).fixed
+        self._month = floor((self.rata_die - Ethiopic().from_date(self.year, 1, 1).fixed) / 30) + 2
+        self._day = self.rata_die + 1 - Ethiopic().from_date(self.year, self.month, 1).fixed
 
 
-def coptic_leap_year(year: int) -> bool:
+def ethiopic_leap_year(year: int) -> bool:
     return year % 4 == 3
