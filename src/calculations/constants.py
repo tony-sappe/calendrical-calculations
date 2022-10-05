@@ -38,6 +38,25 @@ SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY = 0, 1, 2, 3, 4, 
 COPTIC_MONTH_LENGTHS = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 5]
 TKYRIAKE, PESNAU, PSHOMENT, PEFTOOU, PTIOU, PSOOU, PSABBATON = 0, 1, 2, 3, 4, 5, 6
 
+# Ethiopian
+(
+    MASKARAM,
+    TEQEMT,
+    HEDAR,
+    TAKHSAS,
+    TER,
+    YAKATIT,
+    MAGABIT,
+    MIYAZYA,
+    GENBOT,
+    SANE,
+    HAMLE,
+    NAHASE,
+    PAGUEMEN,
+) = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+ETHIOPIC_MONTH_LENGTHS = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 5]
+IHUD, SANYO, MAKSANYO, ROB, HAMUS, ARB, KIDAMME = 0, 1, 2, 3, 4, 5, 6
+
 
 @dataclass
 class Epoch:  # Gregorian Equivalent
