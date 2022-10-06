@@ -42,4 +42,4 @@ However, completing this provides a learning opportunity and confidence the algo
 - Python 3.10
     - pyre
     - black
-
+- colorama

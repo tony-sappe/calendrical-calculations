@@ -107,13 +107,15 @@ class Hebrew(Date):
 
     @property
     def month_name(self) -> str:
+        if self.is_leapyear:
+            self.month_names[11] = "Adar I"
         return self.month_names[self._month]
 
     @property
     def day_name(self) -> str:
         """Pretty-print integer by adding the ordinal indicator"""
 
-        return f"{self.day}{get_ordinal_indicator(self.day)}"
+        return f"{self.day}"
 
     @property
     def dow(self) -> int:
@@ -137,7 +139,7 @@ class Hebrew(Date):
 
     @property
     def pretty_display(self) -> str:
-        return f"{self.dow_name} {self.month_name} {self.day_name}, {self.year_name}"
+        return f"({self.dow_name}) {self.month_name} {self.day_name}, {self.year_name}"
 
     @property
     def fixed(self) -> Union[int, float]:
@@ -166,31 +168,37 @@ class Hebrew(Date):
         approx = floor((98496 / 35975351) * (self.rata_die - self.epoch)) + 1
 
         y = approx - 1
-        while hebrew_new_year(y) <= self.rata_die:
-            y += 1
-        self._year = y
+        while True:
+            if hebrew_new_year(y) <= self.rata_die:
+                y += 1
+            else:
+                self._year = y - 1
+                break
 
         if self.rata_die < Hebrew().from_date(self.year, NISAN, 1).fixed:
             start = TISHRI
         else:
             start = NISAN
 
-        m_values = [start]
-        while (
-            self.rata_die
-            <= Hebrew()
-            .from_date(
-                self.year,
-                m_values[-1],
-                last_day_of_hebrew_month(self.year, m_values[-1]),
-            )
-            .fixed
-        ):
-            m_values.append(m_values[-1] + 1)
-            if m_values[-1] > 13:
+        # m = start
+        # while True:
+        #     test_fixed_date = Hebrew().from_date(self.year, m, last_day_of_hebrew_month(self.year, m)).fixed
+        #     if self.rata_die <= test_fixed_date:
+        #         m += 1
+        #     else:
+        #         self._month = m + 2
+        #         break
+
+        m_vals = [start]
+        while True:
+            test_fixed_date = Hebrew().from_date(self.year, m_vals[-1], last_day_of_hebrew_month(self.year, m_vals[-1])).fixed
+            if self.rata_die <= test_fixed_date:
+                m_vals.append(m_vals[-1] + 1)
+            else:
+                self._month = min(m_vals)
                 break
 
-        self._month = min(m_values)
+        print(f"Day Calc: {self.rata_die} - Hebrew({self.year}, {self.month}, 1) = {self.rata_die - Hebrew().from_date(self.year, self.month, 1).fixed}")
         self._day = self.rata_die - Hebrew().from_date(self.year, self.month, 1).fixed
 
 
@@ -250,7 +258,7 @@ def days_in_hebrew_year(year: int) -> int:
 
 
 def last_day_of_hebrew_month(year: int, month: int) -> int:
-    long_marheshvan = days_in_hebrew_year(year) in (335, 385)
+    long_marheshvan = days_in_hebrew_year(year) in (355, 385)
     short_kislev = days_in_hebrew_year(year) in (353, 383)
     if (
         month in (IYYAR, TAMMUZ, ELUL, TEVET, ADAR_II)
