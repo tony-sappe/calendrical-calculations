@@ -3,7 +3,6 @@ from math import floor
 from typing import Union
 
 from .constants import *
-from .third_party import get_ordinal_indicator
 from .base import Date, rd, day_of_week_from_fixed, DateFormatException, hr
 
 
@@ -88,6 +87,9 @@ class Hebrew(Date):
                 f"{self.day} falls outside of {self.month_name}'s {days_in_month} days"
             )
 
+    def set_month(self, m: int) -> None:
+        self._month = m - 1
+
     @property
     def year(self) -> int:
         return self._year
@@ -164,10 +166,9 @@ class Hebrew(Date):
 
     def _date_from_fixed(self) -> None:
         """Calculate the Hebrew YYYY-MM-DD from a fixed-date"""
-
         approx = floor((98496 / 35975351) * (self.rata_die - self.epoch)) + 1
 
-        y = approx - 1
+        y = 1 - approx  # There is a discrepancy between the book and code: y = approx - 1
         while True:
             if hebrew_new_year(y) <= self.rata_die:
                 y += 1
@@ -180,26 +181,18 @@ class Hebrew(Date):
         else:
             start = NISAN
 
-        # m = start
-        # while True:
-        #     test_fixed_date = Hebrew().from_date(self.year, m, last_day_of_hebrew_month(self.year, m)).fixed
-        #     if self.rata_die <= test_fixed_date:
-        #         m += 1
-        #     else:
-        #         self._month = m + 2
-        #         break
-
-        m_vals = [start]
+        m = start
         while True:
-            test_fixed_date = Hebrew().from_date(self.year, m_vals[-1], last_day_of_hebrew_month(self.year, m_vals[-1])).fixed
+            test_fixed_date = (
+                Hebrew().from_date(self.year, m, last_day_of_hebrew_month(self.year, m)).fixed
+            )
             if self.rata_die <= test_fixed_date:
-                m_vals.append(m_vals[-1] + 1)
-            else:
-                self._month = min(m_vals)
                 break
+            else:
+                m += 1
 
-        print(f"Day Calc: {self.rata_die} - Hebrew({self.year}, {self.month}, 1) = {self.rata_die - Hebrew().from_date(self.year, self.month, 1).fixed}")
-        self._day = self.rata_die - Hebrew().from_date(self.year, self.month, 1).fixed
+        self.set_month(m)
+        self._day = self.rata_die - Hebrew().from_date(self.year, self.month, 1).fixed + 1
 
 
 def hebrew_leap_year(year: int) -> bool:
@@ -207,7 +200,7 @@ def hebrew_leap_year(year: int) -> bool:
 
 
 def hebrew_sabbatical_year(year: int) -> bool:
-    """No longer bears calendrical significance"""
+    """No longer has calendrical significance"""
     return year % 7 == 0
 
 
@@ -270,12 +263,3 @@ def last_day_of_hebrew_month(year: int, month: int) -> int:
 
     else:
         return 30
-
-
-# (defun fixed-from-molad (moon)
-#   ;; TYPE duration -> fixed-date
-#   ;; Fixed date of the molad that occurs $moon$ days
-#   ;; and fractional days into the week.
-#   (let* ((r (mod (- (* 74377 moon) 2879/2160) 7)))
-#     (fixed-from-moment
-#      (+ (molad 1 tishri) (* r 765433)))))
