@@ -67,7 +67,9 @@ class Ethiopic(Date):
         """Verify the legitimacy of the provided YYYY-MM-DD"""
 
         if self._month < 0 or self._month > 12:
-            raise DateFormatException(f"{self.month} falls outside of the 1-13 valid months")
+            raise DateFormatException(
+                f"{self.month} falls outside of the 1-13 valid months"
+            )
 
         if self.day < 0 or self.day > self.month_duration:
             raise DateFormatException(
@@ -145,8 +147,13 @@ class Ethiopic(Date):
         """Calculate the Ethiopic YYYY-MM-DD from a fixed-date"""
 
         self._year = floor((4 * (self.rata_die - self.epoch) + 1463) / 1461)
-        self._month = floor((self.rata_die - Ethiopic().from_date(self.year, 1, 1).fixed) / 30) + 2
-        self._day = self.rata_die + 1 - Ethiopic().from_date(self.year, self.month, 1).fixed
+        self._month = (
+            floor((self.rata_die - Ethiopic().from_date(self.year, 1, 1).fixed) / 30)
+            + 2
+        )
+        self._day = (
+            self.rata_die + 1 - Ethiopic().from_date(self.year, self.month, 1).fixed
+        )
 
 
 def ethiopic_leap_year(year: int) -> bool:

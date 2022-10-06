@@ -23,7 +23,15 @@ class Gregorian(Date):
         "November",
         "December",
     ]
-    day_names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    day_names = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+    ]
 
     def __init__(self):
         self.month_lengths = copy(JULIAN_MONTH_LENGTHS)

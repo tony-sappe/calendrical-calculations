@@ -1,4 +1,5 @@
 from abc import ABC
+from math import floor
 from typing import Union
 
 from .constants import SUNDAY
@@ -70,4 +71,11 @@ def rd(tee: int) -> int:
 
 
 def day_of_week_from_fixed(fixed_date: Union[int, float]) -> int:
-    return (fixed_date - rd(0) - SUNDAY) % 7
+    return floor(fixed_date - rd(0) - SUNDAY) % 7
+
+
+# === Time and Astronomy ===
+
+
+def hr(x: float) -> float:
+    return x / 24
