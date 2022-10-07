@@ -75,18 +75,6 @@ class Coptic(Date):
             )
 
     @property
-    def year(self) -> int:
-        return self._year
-
-    @property
-    def month(self) -> int:
-        return self._month + 1
-
-    @property
-    def day(self) -> int:
-        return self._day
-
-    @property
     def year_name(self) -> str:
         postfix = ""
         if self.year >= 1:
@@ -145,7 +133,7 @@ class Coptic(Date):
         """Calculate the Coptic YYYY-MM-DD from a fixed-date"""
 
         self._year = floor((4 * (self.rata_die - self.epoch) + 1463) / 1461)
-        self._month = floor((self.rata_die - Coptic().from_date(self.year, 1, 1).fixed) / 30) + 2
+        self.month = floor((self.rata_die - Coptic().from_date(self.year, 1, 1).fixed) / 30) + 2
         self._day = self.rata_die + 1 - Coptic().from_date(self.year, self.month, 1).fixed
 
 

@@ -48,16 +48,28 @@ class Date(ABC):
         raise NotImplementedError()
 
     @property
-    def year(self):
-        raise NotImplementedError()
+    def year(self) -> int:
+        return self._year
+
+    @year.setter
+    def year(self, y: int):
+        self._year = y
 
     @property
-    def month(self):
-        raise NotImplementedError()
+    def month(self) -> int:
+        return self._month + 1
+
+    @month.setter
+    def month(self, m: int):
+        self._month = m - 1
 
     @property
-    def day(self):
-        raise NotImplementedError()
+    def day(self) -> int:
+        return self._day
+
+    @day.setter
+    def day(self, d: int):
+        self._day = d
 
     @property
     def fixed(self):

@@ -27,7 +27,9 @@ h = Hebrew().from_date(4000, 12, 10)
 g = Gregorian().from_date(240, 2, 21)
 assert h == g, f"❌ H: ({h.fixed}) {h.pretty_display} | G: ({g.fixed}) {g.pretty_display}"
 h2 = Hebrew().from_fixed(87344)
-assert h.year == h2.year and h.month == h2.month and h.day == h2.day, f"❌ {h.pretty_display} vs {h2.pretty_display}"
+assert (
+    h.year == h2.year and h.month == h2.month and h.day == h2.day
+), f"❌ {h.pretty_display} vs {h2.pretty_display}"
 
 
 # === Notable Dates Comparisons ===

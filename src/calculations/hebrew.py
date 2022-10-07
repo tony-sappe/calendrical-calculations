@@ -87,21 +87,6 @@ class Hebrew(Date):
                 f"{self.day} falls outside of {self.month_name}'s {days_in_month} days"
             )
 
-    def set_month(self, m: int) -> None:
-        self._month = m - 1
-
-    @property
-    def year(self) -> int:
-        return self._year
-
-    @property
-    def month(self) -> int:
-        return self._month + 1
-
-    @property
-    def day(self) -> int:
-        return self._day
-
     @property
     def year_name(self) -> str:
 
@@ -173,8 +158,8 @@ class Hebrew(Date):
             if hebrew_new_year(y) <= self.rata_die:
                 y += 1
             else:
-                self._year = y - 1
                 break
+        self.year = y - 1
 
         if self.rata_die < Hebrew().from_date(self.year, NISAN, 1).fixed:
             start = TISHRI
@@ -191,8 +176,8 @@ class Hebrew(Date):
             else:
                 m += 1
 
-        self.set_month(m)
-        self._day = self.rata_die - Hebrew().from_date(self.year, self.month, 1).fixed + 1
+        self.month = m
+        self.day = self.rata_die - Hebrew().from_date(self.year, self.month, 1).fixed + 1
 
 
 def hebrew_leap_year(year: int) -> bool:
@@ -211,7 +196,7 @@ def last_month_in_hebrew_year(year: int) -> int:
         return ADAR
 
 
-def molad(year: int, month: int) -> int:
+def molad(year: int, month: int) -> float:
     y = year
     if month < TISHRI:
         y += 1
