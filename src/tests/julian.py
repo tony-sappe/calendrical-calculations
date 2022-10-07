@@ -78,17 +78,6 @@ except IndexError:
     pass
 
 
-# === Check Julian to Gregorian ===
-from ..calculations.gregorian import Gregorian
-
-assert Julian().from_fixed(-1373427) == Julian().from_date(-3761, 10, 7), "❌"
-assert Julian().from_fixed(-1373427) == Gregorian().from_fixed(-1373427), "❌"
-assert Julian().from_date(-3761, 10, 7) == Gregorian().from_fixed(-1373427), "❌"
-assert Julian().from_fixed(-1373427) == Gregorian().from_date(-3760, 9, 7), "❌"
-assert Julian().from_date(-3761, 10, 7) == Gregorian().from_date(-3760, 9, 7), "❌"
-
-print(Julian().from_fixed(-1373427).pretty_display)
-print(Gregorian().from_fixed(-1373427).pretty_display)
 # === Check Fixed Date constructor ===
 
 check_values = [  # fixed-date, year, month, day)

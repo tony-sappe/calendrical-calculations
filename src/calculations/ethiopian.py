@@ -75,18 +75,6 @@ class Ethiopic(Date):
             )
 
     @property
-    def year(self) -> int:
-        return self._year
-
-    @property
-    def month(self) -> int:
-        return self._month + 1
-
-    @property
-    def day(self) -> int:
-        return self._day
-
-    @property
     def year_name(self) -> str:
         postfix = ""
         if self.year >= 1:
@@ -119,7 +107,7 @@ class Ethiopic(Date):
     @property
     def is_leapyear(self) -> bool:
         """True if the current year is a leap year"""
-        return ethiopic_leap_year(self._year)
+        return ethiopic_leap_year(self.year)
 
     @property
     def pretty_display(self) -> str:
@@ -137,16 +125,18 @@ class Ethiopic(Date):
             - 1
             + 365 * (self.year - 1)
             + floor(self.year / 4)
-            + 30 * (self._month)
+            + 30 * (self.month)
             + self.day
         )
 
     def _date_from_fixed(self) -> None:
         """Calculate the Ethiopic YYYY-MM-DD from a fixed-date"""
 
-        self._year = floor((4 * (self.rata_die - self.epoch) + 1463) / 1461)
-        self._month = floor((self.rata_die - Ethiopic().from_date(self.year, 1, 1).fixed) / 30) + 2
-        self._day = self.rata_die + 1 - Ethiopic().from_date(self.year, self.month, 1).fixed
+        self.year = floor((4 * (self.rata_die - self.epoch) + 1463) / 1461)
+        self.month = (
+            floor((self.rata_die - Ethiopic().from_date(self.year, 1, 1).fixed) / 30) + 1
+        )
+        self.day = self.rata_die + 1 - Ethiopic().from_date(self.year, self.month, 1).fixed
 
 
 def ethiopic_leap_year(year: int) -> bool:

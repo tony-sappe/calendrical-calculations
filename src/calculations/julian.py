@@ -23,7 +23,15 @@ class Julian(Date):
         "November",
         "December",
     ]
-    day_names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    day_names = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+    ]
 
     def __init__(self):
         self.month_lengths = copy(JULIAN_MONTH_LENGTHS)
@@ -76,18 +84,6 @@ class Julian(Date):
             raise DateFormatException(
                 f"{self.day} falls outside of {self.month_name}'s {self.month_duration} days"
             )
-
-    @property
-    def year(self) -> int:
-        return self._year
-
-    @property
-    def month(self) -> int:
-        return self._month + 1
-
-    @property
-    def day(self) -> int:
-        return self._day
 
     @property
     def year_name(self) -> str:
@@ -164,27 +160,21 @@ class Julian(Date):
         """Calculate the Julian YYYY-MM-DD from a fixed-date"""
 
         approx = floor((4 * (self.rata_die - self.epoch) + 1464) / 1461)
+        self.year = approx
         if approx <= 0:
-            self._year = approx - 1
-        else:
-            self._year = approx
+            self.year = approx - 1
 
+        correction = 2
         if self.rata_die < Julian().from_date(self.year, MARCH, 1).fixed:
             correction = 0
         elif self.is_leapyear:
             correction = 1
-        else:
-            correction = 2
 
         prior_days = self.rata_die - Julian().from_date(self.year, JANUARY, 1).fixed
 
-        self._month = floor((12 * (prior_days + correction) + 373) / 367) - 1
-        self._day = floor(self.rata_die - Julian().from_date(self.year, self.month, 1).fixed + 1)
+        self.month = floor((12 * (prior_days + correction) + 373) / 367)
+        self.day = floor(self.rata_die - Julian().from_date(self.year, self.month, 1).fixed + 1)
 
 
 def julian_leap_year(year: int) -> bool:
-    if year > 0:
-        x = 0
-    else:
-        x = 3
-    return year % 4 == x
+    return year % 4 == [3, 0][year > 0]  # if year is positive, look for 0 remainder

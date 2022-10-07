@@ -17,7 +17,15 @@ from dataclasses import dataclass
     DECEMBER,
 ) = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
 JULIAN_MONTH_LENGTHS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY = 0, 1, 2, 3, 4, 5, 6
+SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY = (
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+)  # days
 
 # Coptic
 (
@@ -36,7 +44,15 @@ SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY = 0, 1, 2, 3, 4, 
     EPAGOMENE,
 ) = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
 COPTIC_MONTH_LENGTHS = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 5]
-TKYRIAKE, PESNAU, PSHOMENT, PEFTOOU, PTIOU, PSOOU, PSABBATON = 0, 1, 2, 3, 4, 5, 6
+TKYRIAKE, PESNAU, PSHOMENT, PEFTOOU, PTIOU, PSOOU, PSABBATON = (
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+)  # days
 
 # Ethiopian
 (
@@ -55,7 +71,26 @@ TKYRIAKE, PESNAU, PSHOMENT, PEFTOOU, PTIOU, PSOOU, PSABBATON = 0, 1, 2, 3, 4, 5,
     PAGUEMEN,
 ) = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
 ETHIOPIC_MONTH_LENGTHS = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 5]
-IHUD, SANYO, MAKSANYO, ROB, HAMUS, ARB, KIDAMME = 0, 1, 2, 3, 4, 5, 6
+IHUD, SANYO, MAKSANYO, ROB, HAMUS, ARB, KIDAMME = 0, 1, 2, 3, 4, 5, 6  # days
+
+# Hebrew
+(
+    NISAN,
+    IYYAR,
+    SIVAN,
+    TAMMUZ,
+    AV,
+    ELUL,
+    TISHRI,
+    MARHESHVAN,
+    KISLEV,
+    TEVET,
+    SHEVAT,
+    ADAR,
+    ADAR_II,
+) = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+HEBREW_MONTH_LENGTHS = [30, 29, 30, 29, 30, 29, 30, 29, 29, 29, 30, 30, 29]
+RISHON, SHENI, SHELISHI, REVII, HAMISHI, SHISHI, SHABBAT = 0, 1, 2, 3, 4, 5, 6  # days
 
 
 @dataclass

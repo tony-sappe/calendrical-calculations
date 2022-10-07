@@ -23,7 +23,15 @@ class Gregorian(Date):
         "November",
         "December",
     ]
-    day_names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    day_names = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+    ]
 
     def __init__(self):
         self.month_lengths = copy(JULIAN_MONTH_LENGTHS)
@@ -75,20 +83,8 @@ class Gregorian(Date):
             )
 
     @property
-    def year(self) -> int:
-        return self._year
-
-    @property
-    def month(self) -> int:
-        return self._month + 1
-
-    @property
-    def day(self) -> int:
-        return self._day
-
-    @property
     def year_name(self) -> str:
-        return f"{self._year}"
+        return f"{self.year}"
 
     @property
     def month_name(self) -> str:
@@ -173,18 +169,18 @@ class Gregorian(Date):
     def _date_from_fixed(self) -> None:
         """Calculate the Gregorian YYYY-MM-DD from a fixed-date"""
 
-        self._year = self._year_from_fixed()
-        prior_days = self.rata_die - Gregorian().from_date(self._year, JANUARY, 1).fixed
+        self.year = self._year_from_fixed()
+        prior_days = self.rata_die - Gregorian().from_date(self.year, JANUARY, 1).fixed
 
-        if self.rata_die < Gregorian().from_date(self._year, MARCH, 1).fixed:
+        if self.rata_die < Gregorian().from_date(self.year, MARCH, 1).fixed:
             correction = 0
         elif self.is_leapyear:
             correction = 1
         else:
             correction = 2
 
-        self._month = floor((12 * (prior_days + correction) + 373) / 367) - 1
-        self._day = self.rata_die - Gregorian().from_date(self._year, self.month, 1).fixed + 1
+        self.month = floor((12 * (prior_days + correction) + 373) / 367)
+        self.day = self.rata_die - Gregorian().from_date(self._year, self.month, 1).fixed + 1
 
 
 def gregorian_leap_year(year: int) -> bool:
