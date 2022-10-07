@@ -109,7 +109,7 @@ except IndexError:
 
 
 assert Hebrew().from_fixed(30) - Hebrew().from_fixed(10) == Hebrew().from_fixed(20), "❌"
-assert Hebrew().from_fixed(30) - Hebrew().from_fixed(10) == Hebrew().from_fixed(20), "❌"
+assert Hebrew().from_fixed(30) + Hebrew().from_fixed(10) == Hebrew().from_fixed(40), "❌"
 assert Hebrew().from_fixed(103605) - Hebrew().from_date(284, 8, 29) == Hebrew().from_fixed(
     0
 ), "❌"

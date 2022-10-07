@@ -102,5 +102,5 @@ for d in check_values:
 
 
 assert Julian().from_fixed(30) - Julian().from_fixed(10) == Julian().from_fixed(20), "❌"
-assert Julian().from_fixed(30) - Julian().from_fixed(10) == Julian().from_fixed(20), "❌"
+assert Julian().from_fixed(30) + Julian().from_fixed(10) == Julian().from_fixed(40), "❌"
 assert Julian().from_fixed(103605) - Julian().from_date(284, 8, 29) == Julian().from_fixed(0), "❌"

@@ -1,3 +1,4 @@
+from ..calculations.base import gregorian_leap_year
 from ..calculations.gregorian import *
 
 # === Leap Years ===
@@ -101,5 +102,5 @@ for d in check_values:
 
 
 assert Gregorian().from_fixed(30) - Gregorian().from_fixed(10) == Gregorian().from_fixed(20), "❌"
-assert Gregorian().from_fixed(30) - Gregorian().from_fixed(10) == Gregorian().from_fixed(20), "❌"
+assert Gregorian().from_fixed(30) + Gregorian().from_fixed(10) == Gregorian().from_fixed(40), "❌"
 assert Gregorian().from_fixed(103605) - Gregorian().from_date(284, 8, 29) == Gregorian().from_fixed(0), "❌"

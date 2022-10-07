@@ -4,19 +4,11 @@ from typing import Union
 
 from .constants import *
 from .third_party import get_ordinal_indicator
-from .base import (
-    Date,
-    DateFormatException,
-    day_of_week_from_fixed,
-    fixed_from_gregorian,
-    gregorian_leap_year,
-    gregorian_year_from_fixed,
-    rd,
-)
+from .base import Date, rd, day_of_week_from_fixed, DateFormatException, nth_kday, iso_long_year, gregorian_year_from_fixed
 
 
-class Gregorian(Date):
-    epoch: int = rd(Epoch.Gregorian)
+class ISO(Date):
+    epoch: int = rd(Epoch.ISO)
     month_names = [
         "January",
         "February",
@@ -45,58 +37,59 @@ class Gregorian(Date):
         self.month_lengths = copy(JULIAN_MONTH_LENGTHS)
         self._year = None
         self._month = None
+        self._week = None
         self._day = None
         self.rata_die = None
 
-    def from_date(self, y: int, m: int, d: int) -> "Gregorian":
+    def __getitem__(self, key: int) -> int:
+        if key not in range(-3, 3):
+            raise IndexError("Date only has three items: year, week, & day")
+        return [self.year, self.week, self.day][key]
+
+    def from_date(self, y: int, w: int, d: int) -> "ISO":
         """Poor-man's Constructor when providing YYYY-MM-DD"""
         self._year = int(y)
-        self._month = int(m) - 1
+        self._week = int(w)
         self._day = int(d)
-        self.rata_die = self._fixed_from_date()
-
-        if self.is_leapyear:
-            self.month_lengths[FEBRUARY - 1] += 1  # 28 -> 29
-
         self._verify()
+        self.rata_die = self._fixed_from_date()
         return self
 
-    def from_fixed(self, fixed_date: Union[int, float]) -> "Gregorian":
+    def from_fixed(self, fixed_date: Union[int, float]) -> "ISO":
         """Poor-man's Constructor when providing Rata Die Fixed Date"""
         self.rata_die = floor(fixed_date)
         self._date_from_fixed()
         return self
 
     def __repr__(self) -> str:
-        return f"Gregorian({self.year:04}, {self.month:02}, {self.day:02})"
+        return f"ISO({self.year:04}, {self.week:02}, {self.day:02})"
 
     def __add__(self, other: Union[Date, int, float]) -> Date:
-        return Gregorian().from_fixed(self.fixed + int(other))
+        return ISO().from_fixed(self.fixed + int(other))
 
     def __sub__(self, other: Union[Date, int, float]) -> Date:
-        return Gregorian().from_fixed(self.fixed - int(other))
+        return ISO().from_fixed(self.fixed - int(other))
 
     def __rsub__(self, other: Union[Date, int, float]) -> Date:
-        return Gregorian().from_fixed(int(other) - self.fixed)
+        return ISO().from_fixed(int(other) - self.fixed)
 
     def _verify(self) -> None:
         """Verify the legitimacy of the provided YYYY-MM-DD"""
 
-        if self._month < 0 or self._month > 11:
-            raise DateFormatException(f"{self.month} falls outside of the 1-12 valid months")
+        if self.week <= 0:
+            raise DateFormatException(f"Week must be positive, not {self.week}")
 
-        if self.day < 0 or self.day > self.month_duration:
-            raise DateFormatException(
-                f"{self.day} falls outside of {self.month_name}'s {self.month_duration} days"
-            )
+    @property
+    def week(self) -> int:
+        return self._week
+
+    @week.setter
+    def week(self, w: int) -> None:
+        self._week = w
 
     @property
     def year_name(self) -> str:
         return f"{self.year}"
-
-    @property
-    def month_name(self) -> str:
-        return self.month_names[self._month]
 
     @property
     def day_name(self) -> str:
@@ -115,37 +108,35 @@ class Gregorian(Date):
         return self.day_names[self.dow]
 
     @property
-    def month_duration(self) -> int:
-        """Obtain the number of days in the month"""
-        return self.month_lengths[self._month]
-
-    @property
     def is_leapyear(self) -> bool:
         """True if the current year is a leap year"""
-        return gregorian_leap_year(self._year)
+        return iso_long_year(self._year)
 
     @property
     def pretty_display(self) -> str:
-        return f"{self.dow_name} {self.month_name} {self.day_name}, {self.year_name}"
+        return f"Day {self.day} of week {self.week} of year {self.year}"
 
     @property
     def fixed(self) -> Union[int, float]:
         return self.rata_die
 
     def _fixed_from_date(self) -> Union[int, float]:
-        return fixed_from_gregorian(self.year, self.month, self.day)
+        return nth_kday(self.week, SUNDAY, self.year - 1, DECEMBER, 28)
 
     def _date_from_fixed(self) -> None:
-        """Calculate the Gregorian YYYY-MM-DD from a fixed-date"""
+        """Calculate the ISO YYYY-WW-DD from a fixed-date"""
 
-        self.year = gregorian_year_from_fixed(self.rata_die)
-        prior_days = self.rata_die - Gregorian().from_date(self.year, JANUARY, 1).fixed
+        approx = gregorian_year_from_fixed(self.rata_die - 3)
 
-        correction = 2
-        if self.rata_die < Gregorian().from_date(self.year, MARCH, 1).fixed:
-            correction = 0
-        elif self.is_leapyear:
-            correction = 1
+        if self.rata_die >= ISO().from_date(approx + 1, 1, 1).fixed:
+            self.year = approx + 1
+        else:
+            self.year = approx
 
-        self.month = floor((12 * (prior_days + correction) + 373) / 367)
-        self.day = self.rata_die - Gregorian().from_date(self.year, self.month, 1).fixed + 1
+        self.week = floor((self.rata_die - ISO().from_date(self.year, 1, 1).fixed) / 7) + 1
+
+        x = self.rata_die - rd(0)
+        if x % 7 == 0:
+            self.day = 7
+        else:
+            self.day = x % 7

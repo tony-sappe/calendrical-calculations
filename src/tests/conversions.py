@@ -1,6 +1,6 @@
 from colorama import Fore, Back, Style, init
 
-from ..calculations import Gregorian, Julian, Ethiopic, Coptic, Hebrew
+from ..calculations import Gregorian, Julian, Ethiopic, Coptic, Hebrew, ISO
 
 init()
 
@@ -22,7 +22,6 @@ print(Gregorian().from_fixed(-1373427).pretty_display)
 
 
 # === Check Hebrew to Gregorian ===
-
 h = Hebrew().from_date(4000, 12, 10)
 g = Gregorian().from_date(240, 2, 21)
 assert h == g, f"❌ H: ({h.fixed}) {h.pretty_display} | G: ({g.fixed}) {g.pretty_display}"
@@ -30,6 +29,21 @@ h2 = Hebrew().from_fixed(87344)
 assert (
     h.year == h2.year and h.month == h2.month and h.day == h2.day
 ), f"❌ {h.pretty_display} vs {h2.pretty_display}"
+
+
+# === Check ISO to Gregorian ===
+print("   Gregorian                    |   ISO")
+print("=======================================")
+check_values = [  # Gregorian, year, week, day)
+    (Gregorian().from_date(2000, 12, 19), 2000, 51, 2),
+]
+
+for d in check_values:
+    I = ISO().from_fixed(d[0].fixed)
+    assert I.year == d[1], f"❌ {d[0]} Year:{I.year}"
+    assert I.week == d[2], f"❌ {d[0]} Week:{I.week}"
+    assert I.day == d[3], f"❌ {d[0]} Day:{I.day}"
+    print(f"✅ {d[0].pretty_display} == {I.pretty_display}")
 
 
 # === Notable Dates Comparisons ===
